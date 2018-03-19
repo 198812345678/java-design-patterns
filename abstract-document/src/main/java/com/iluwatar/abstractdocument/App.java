@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 写入无类型，获取有类型
  * The Abstract Document pattern enables handling additional, non-static
  * properties. This pattern uses concept of traits to enable type safety and
  * separate properties of different classes into set of interfaces.
@@ -54,15 +55,24 @@ public class App {
   public App() {
     LOGGER.info("Constructing parts and car");
 
+    /**
+     * cart自身属性
+     */
     Map<String, Object> carProperties = new HashMap<>();
     carProperties.put(HasModel.PROPERTY, "300SL");
     carProperties.put(HasPrice.PROPERTY, 10000L);
 
+    /**
+     * 轮胎属性
+     */
     Map<String, Object> wheelProperties = new HashMap<>();
     wheelProperties.put(HasType.PROPERTY, "wheel");
     wheelProperties.put(HasModel.PROPERTY, "15C");
     wheelProperties.put(HasPrice.PROPERTY, 100L);
 
+    /**
+     * 门的属性
+     */
     Map<String, Object> doorProperties = new HashMap<>();
     doorProperties.put(HasType.PROPERTY, "door");
     doorProperties.put(HasModel.PROPERTY, "Lambo");
@@ -70,10 +80,20 @@ public class App {
 
     carProperties.put(HasParts.PROPERTY, Arrays.asList(wheelProperties, doorProperties));
 
+    /**
+     * cart类定义就决定了他是一个parts，因此可以getParts
+     * HasModel, HasPrice, HasParts定义成接口是因为他们只声明行为，行为如何完成不关心
+     * AbstractDocument定义了实现方式，HasModel, HasPrice, HasParts同样继承Document是为了能够使用AbstractDocument中的实现
+     *
+     * 创建cart时只关心属性的存储容器，有哪些属性、以及属性的组织形式都不关心
+     * 获取这些属性根据HasModel, HasPrice, HasParts声明的行为获取，同时保证类型正确
+     * 
+     * AbstractDocument的实现决定了cart能接受的容器
+     */
     Car car = new Car(carProperties);
 
     LOGGER.info("Here is our car:");
-    LOGGER.info("-> model: {}", car.getModel().get());
+    LOGGER.info("-> model: {}", car.getModel().get());//
     LOGGER.info("-> price: {}", car.getPrice().get());
     LOGGER.info("-> parts: ");
     car.getParts().forEach(p -> LOGGER.info("\t{}/{}/{}", p.getType().get(), p.getModel().get(), p.getPrice().get()));
